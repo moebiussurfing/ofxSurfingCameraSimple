@@ -575,3 +575,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+Example_Cam/bin/data/Camera.txt
+Example_Cam/enc_temp_folder/91e5d3a9254436fbf8fedf5a850c0b/surfingEasyCam.h

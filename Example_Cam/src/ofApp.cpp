@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	int r = 20;
+	int r = 50;
 	ofSetConeResolution(r, 1);
 	ofSetSphereResolution(r);
 	ofSetCylinderResolution(r, 1);
@@ -80,13 +80,10 @@ void ofApp::drawGui() {
 	{
 		if (ui.BeginWindow("ofApp")) {
 			ui.AddMinimizerToggle();
-			if (ui.isMaximized()) {
-				ui.Add(ui.bAutoResize, OFX_IM_TOGGLE_ROUNDED_MINI);
-			}
 			ui.AddSpacingSeparated();
 
-			ui.Add(bDrawGrid, OFX_IM_TOGGLE_ROUNDED);
 			ui.Add(cam.bGui, OFX_IM_TOGGLE_ROUNDED);
+			ui.Add(bDrawGrid, OFX_IM_TOGGLE_ROUNDED_MINI);
 
 			ui.EndWindow();
 		}

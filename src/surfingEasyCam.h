@@ -5,18 +5,29 @@
 #include "ofxSurfingHelpersLite.h"
 
 /*
+	SurfingEasyCam.h
+
 	Extends ofEasyCam with:
 
-	- Implements a mouse control workflow. (Ctrl key)
-	- Momentary modes
-		True: toggles mouse control state.
+	- Implements a mouse control workflow. 
+		Ctrl key toggles mode.
+	- Momentary modes:
+		True: toggles mouse control state and stay.
 		False: enables mouse control state momentary.
 	- Inertia and drag settings and config.
 	- Help info and key commands.
 	- ImGui required but it could be removed easily.
 */
 
+/*
+	TODO
+	- add floor class
+	- add extra cam with easing
+	-
+*/
+
 #define SURFING__SCENE_SIZE_UNIT 1000.f
+
 #define SURFING__CAMERA_FAR_CLIP 1000000.f
 #define SURFING__CAMERA_NEAR_CLIP -1000000.f
 
@@ -31,6 +42,7 @@ public:
 		ofAddListener(ofEvents().update, this, &SurfingEasyCam::update);
 		ofAddListener(ofEvents().keyPressed, this, &SurfingEasyCam::keyPressed);
 		ofAddListener(ofEvents().keyReleased, this, &SurfingEasyCam::keyReleased);
+		ofAddListener(ofEvents().windowResized, this, &SurfingEasyCam::windowResized);
 
 		this->reset();
 
@@ -43,6 +55,7 @@ public:
 		ofRemoveListener(paramsCamera.parameterChangedE(), this, &SurfingEasyCam::ChangedCamera);
 		ofRemoveListener(ofEvents().keyPressed, this, &SurfingEasyCam::keyPressed);
 		ofRemoveListener(ofEvents().keyReleased, this, &SurfingEasyCam::keyReleased);
+		ofRemoveListener(ofEvents().windowResized, this, &SurfingEasyCam::windowResized);
 
 		if (!bDoneExit) exit();
 	}
@@ -127,12 +140,14 @@ public:
 	//TODO: listener and ctrl to toggle/enable workflow
 	ofParameter<bool> bMouseCam { "Mouse Camera", false };
 	ofParameter<bool> bInertia { "Inertia", false };
+	ofParameter<void> vResetInertia { "Reset Inertia" };
 	ofParameter<float> dragInertia { "Drag Inertia", .7f, 0.2f, 1.0f };
 	ofParameter<bool> bOrtho { "Ortho", false };
 
 private:
 	ofEventListener listenerMouseCam;
 	ofEventListener listenerIntertia;
+	ofEventListener listenerResetIntertia;
 	ofEventListener listenerOrtho;
 	ofEventListener listenerDrag;
 
@@ -149,6 +164,7 @@ protected:
 	// false: mouse cam state switch when key mod press.
 
 	bool bDoneSetup = false;
+	bool bDoneFixControlArea = false;
 
 public:
 	void setup() {
@@ -201,6 +217,9 @@ public:
 private:
 	void setupCallbacks() {
 		ofLogNotice("SurfingEasyCam") << "setupCallbacks()";
+
+		//TODO: how to know when ofEasyCam changed internally to trig save?
+		//this->listenerDrag
 
 		//--
 
@@ -269,6 +288,10 @@ private:
 			this->setDrag(v);
 		});
 
+		listenerResetIntertia = vResetInertia.newListener([&](void) {
+			dragInertia = 0.7f;
+		});
+
 		listenerOrtho = bOrtho.newListener([&](bool & b) {
 			if (b)
 				this->enableOrtho();
@@ -307,12 +330,21 @@ private:
 		ofLogNotice("SurfingEasyCam") << "startup()";
 
 		load();
+
+		//TODO
+		this->setControlArea(ofGetCurrentViewport());
 	}
 
 private:
 	void update(ofEventArgs & args) {
 		if (!bDoneSetup) {
 			setup();
+		}
+
+		//TODO
+		if (!bDoneFixControlArea && ofGetFrameNum() > 0) {
+			this->setControlArea(ofGetCurrentViewport());
+			bDoneFixControlArea = true;
 		}
 
 		if (bFlagBuildHelp) {
@@ -330,10 +362,6 @@ private:
 		case OF_KEY_LEFT_CONTROL:
 			bKeyMod = true;
 			break;
-			//case 'C':
-			//case 'c':
-			//	this->getMouseInputEnabled() ? this->disableMouseInput() : this->enableMouseInput();
-			//	break;
 
 		case ' ':
 			bOrtho = !bOrtho;
@@ -396,12 +424,13 @@ public:
 		stringstream ss;
 		ss << "Camera\n"
 		   << endl;
-		ss << "H:     Help" << endl;
-		ss << "CTRL:  Toggle Mouse Input" << endl;
-		ss << "SPACE: Projection\n";
+		ss << "h:     Help" << endl;
+		ss << "Ctrl:  Mouse Input" << endl;
+		ss << "Space: Projection\n";
 		ss << "       Mode " << (bOrtho ? "Ortho" : "Perspective") << endl;
-		ss << "I:     Camera Inertia" << endl;
-		ss << "Y:     Relative y axis" << endl;
+		ss << "i:     Camera Inertia" << endl;
+		ss << "y:     Relative y axis" << endl;
+		ss << "m:     Translation" << endl;
 		ss << endl;
 		ss << "Mouse Input:     " << (this->getMouseInputEnabled() ? "Enabled" : "Disabled") << endl;
 		ss << "Momentary:       " << (bKeyModMomentary ? "True" : "False") << endl;
@@ -424,18 +453,26 @@ public:
 		ss << "Truck and Boom" << endl;
 		ss << endl;
 		ss << "Move over z axis" << endl;
-		ss << "Right Mouse button drag (up/down)" << endl;
+		ss << "Right Mouse button drag" << endl;
 		ss << "Vertical mouse wheel" << endl;
 		ss << "Dolly/Zoom In/Out" << endl;
 		if (bOrtho) {
 			ss << endl;
-			ss << "Notice that in Mode Ortho zoom \nwill be centered at the mouse position.";
+			ss << "Notice that in Mode Ortho \n";
+			ss << "zoom will be centered at the mouse position.";
 		}
 
 		sHelp = ss.str();
+
+		buildHelpGui();
 	}
 
-	void drawHelpText() {
+	virtual void buildHelpGui() { //optional for some ui's..
+		//ofLogNotice("SurfingEasyCam") << "buildHelpGui()";
+	}
+
+	virtual void drawHelpText() {
+		if (!bGui) return;
 		if (!bHelp) return;
 
 		ofxSurfing::ofDrawBitmapStringBox(sHelp, ofxSurfing::SURFING_LAYOUT_BOTTOM_RIGHT);
@@ -445,9 +482,12 @@ public:
 
 	void doSaveSettings() {
 		ofLogNotice("SurfingEasyCam") << "doSaveSettings() > " << path;
-		
-		//TODO
+
 		bOrtho.set(this->getOrtho());
+		bInertia.set(this->getInertiaEnabled());
+
+		//TODO
+		//bMouseCam.set(this->getMouseInputEnabled());//fails bc auto saver
 
 		ofxSurfing::saveSettings(parameters, path);
 	}
@@ -495,12 +535,8 @@ public:
 		//this->setVFlip(true);
 
 		float d = SURFING__SCENE_SIZE_UNIT;
-		this->setPosition({ 0,  d, d });
+		this->setPosition({ 0, d, d });
 		this->lookAt(glm::vec3(0, 0, 0));
-
-		////TODO
-		//this->setPosition({ 8.35512, 581.536, 696.76 });
-		//this->setOrientation({ 0.940131, -0.340762, 0.00563653, 0.00204303 });
 	}
 
 	void doResetSettings() {
@@ -540,6 +576,7 @@ public:
 				if (bEnableCameraAutosave) doLoadCamera();
 			}
 
+			//TODO
 			// refresh
 			bInertia.set(bInertia.get());
 			bMouseCam.set(bMouseCam.get());
@@ -571,6 +608,7 @@ private:
 
 		keyPressed(key);
 	}
+
 	void keyReleased(ofKeyEventArgs & eventArgs) {
 		const int key = eventArgs.key;
 
@@ -583,5 +621,10 @@ private:
 		ofLogVerbose("SurfingEasyCam") << "keyReleased: " << key;
 
 		keyReleased(key);
+	}
+
+	void windowResized(ofResizeEventArgs & resize) {
+		ofRectangle r = { 0.f, 0.f, (float)resize.width, (float)resize.height };
+		this->setControlArea(r);
 	}
 };

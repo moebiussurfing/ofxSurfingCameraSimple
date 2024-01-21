@@ -1,9 +1,10 @@
 ![](Example_Cam/Capture.PNG)
 
 ## Features
-- Auto handle an `ofEasyCam`.
+- An improved `ofEasyCam` class.
+- Added parameters for enable mouse, enable inertia, projection mode...etc.
 - Persistent settings.
-- Gui.
+- ImGui window.
 - Workflow helper.
 
 ## Dependencies
