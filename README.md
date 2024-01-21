@@ -12,4 +12,5 @@
 * ofxSurfingImGui
 * ofxGui
 
-Already includes into `/libs`: https://github.com/roymacdonald/ofxCameraSaveLoad 
+Already includes into `/libs`:  
+https://github.com/roymacdonald/ofxCameraSaveLoad 
