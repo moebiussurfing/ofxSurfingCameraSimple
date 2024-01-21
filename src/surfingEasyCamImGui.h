@@ -37,7 +37,7 @@ public:
 			ui->Add(vResetCamera, OFX_IM_BUTTON);
 
 			if (ui->isMaximized()) {
-				ui->Add(bEnableCameraAutosave);
+				ui->Add(bAutosave);
 				ui->AddSpacing();
 
 				ui->Add(bExtra, OFX_IM_TOGGLE_ROUNDED_MINI);
@@ -59,7 +59,7 @@ public:
 				ui->AddSpacing();
 
 				ui->Add(bDebug, OFX_IM_TOGGLE_ROUNDED_MINI);
-				if (bDebug && ui != nullptr) {
+				if (bDebug) {
 					string s;
 					ui->AddSpacing();
 					bool b = ui->isMouseOverGui();

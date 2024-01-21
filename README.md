@@ -1,11 +1,13 @@
-![](Example_Cam/Capture.PNG)
+## Screenshots
+![](1_Example_Cam_OfxGui/Capture.PNG)
+![](2_Example_Cam_ImGui/Capture.PNG)
 
 ## Features
 - An improved `ofEasyCam` class.
-- Added parameters for enable mouse, enable inertia, projection mode...etc.
-- Persistent settings.
-- ImGui window.
+- Added parameters for enable mouse, inertia, projection mode...etc.
 - Workflow helper.
+- Persistent settings.
+- ImGui or ofxGui ready.
 
 ## Dependencies
 * ofxSurfingHelpersLite
