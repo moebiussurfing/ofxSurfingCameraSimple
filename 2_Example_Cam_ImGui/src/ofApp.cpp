@@ -19,7 +19,6 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackground(48);
 	ofEnableDepthTest();
 
 	cam.begin();
@@ -83,6 +82,7 @@ void ofApp::drawGui() {
 			ui.AddSpacingSeparated();
 
 			ui.Add(cam.bGui, OFX_IM_TOGGLE_ROUNDED);
+
 			ui.Add(bDrawGrid, OFX_IM_TOGGLE_ROUNDED_MINI);
 
 			ui.EndWindow();

@@ -12,6 +12,6 @@ public:
 
 	ofxSurfingGui ui;
 	ofParameter<bool> bDrawGrid { "Draw Grid", true };
-	
+
 	SurfingEasyCamImGui cam;
 };
