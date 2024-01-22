@@ -91,9 +91,9 @@ public:
 		}
 	}
 
-	void buildHelpGui() override { //optional for some ui's..
+	void refreshGui() override { //optional for some ui's..
 		if (ui == nullptr) return;
-		ofLogNotice("SurfingEasyCam") << "buildHelpGui()";
+		ofLogNotice("SurfingEasyCam") << "refreshGui()";
 
 		helpTextWidget.setText(sHelp);
 	}

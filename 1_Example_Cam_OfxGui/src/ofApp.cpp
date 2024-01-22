@@ -9,11 +9,11 @@ void ofApp::setup() {
 
 	ofxSurfing::setWindowAtMonitor(-1);
 
-	//cam.setup(); // Optional
+	//camera.setup(); // Optional
 
 	gui.setup("ofApp");
 	gui.add(bDrawGrid);
-	gui.add(cam.bGui);
+	gui.add(camera.bGui);
 	ofxSurfing::setGuiPositionToLayout(gui, ofxSurfing::SURFING_LAYOUT_TOP_CENTER);
 }
 
@@ -22,11 +22,11 @@ void ofApp::draw() {
 	ofBackground(48);
 	ofEnableDepthTest();
 
-	cam.begin();
+	camera.begin();
 	{
 		drawScene();
 	}
-	cam.end();
+	camera.end();
 
 	drawGui();
 }
@@ -78,5 +78,5 @@ void ofApp::drawGui() {
 
 	gui.draw();
 
-	cam.drawGui();
+	camera.drawGui();
 }

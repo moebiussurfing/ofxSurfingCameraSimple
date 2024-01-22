@@ -60,6 +60,14 @@ public:
 		if (!bDoneExit) exit();
 	}
 
+private:
+	callback_t f_Reset = nullptr;
+
+public:
+	void setFunctionReset(callback_t f = nullptr) {
+		f_Reset = f;
+	}
+
 public:
 	void exit() {
 		ofLogNotice("SurfingEasyCam") << "exit()";
@@ -74,7 +82,7 @@ private:
 	//--
 
 public:
-	ofParameterGroup paramsCamera;
+	ofParameterGroup paramsCamera { "Camera Preset" };
 	ofParameter<bool> bAutosave { "Auto Save", true };
 	ofParameter<void> vSaveCamera { "Save" };
 	ofParameter<void> vLoadCamera { "Load" };
@@ -92,16 +100,19 @@ private:
 	//--
 
 public:
-	ofParameterGroup parameters;
-	ofParameterGroup paramsInternal;
-	ofParameterGroup paramsSettings;
+	ofParameterGroup parameters { "Camera" };
+	ofParameterGroup paramsInternal { "Internal" };
+	ofParameterGroup paramsSettings { "Settings" };
 
 private:
 	ofEventListener listenerParameters;
 	string path = "Camera.json"; //some main settings
 	string pathCamera = "Camera.txt"; //full camera internal
 
+	string name = "";
+
 public:
+	void setName(const string & name_) { name = name_; }
 	ofParameter<bool> bGui { "Camera", true };
 	ofParameter<bool> bHelp { "Help", false };
 	ofParameter<bool> bExtra { "Extra", true };
@@ -159,33 +170,37 @@ public:
 	void setupParameters() {
 		ofLogNotice("SurfingEasyCam") << "setupParameters()";
 
+		if (name != "") {
+			string n = "";
+			n += "UI ";
+			n += name;
+			bGui.setName(n);
+			parameters.setName(name);
+		}
+
 		//TODO
 		bOrtho.setSerializable(false); //handled by ofxCameraSaveLoad/pathCamera/"Camera.txt"
 
-		paramsCamera.setName("Camera Preset");
 		paramsCamera.add(vLoadCamera);
 		paramsCamera.add(vSaveCamera);
 		paramsCamera.add(bAutosave);
 		paramsCamera.add(vResetCamera);
 
-		paramsSettings.setName("Settings");
-		paramsSettings.add(bMouseCam);
 		paramsSettings.add(bOrtho);
 		paramsSettings.add(bInertia);
 		paramsSettings.add(dragInertia);
 		paramsSettings.add(vResetSettings);
 
-		paramsInternal.setName("Internal");
 		paramsInternal.add(bGui);
 		paramsInternal.add(bExtra);
-		paramsInternal.add(bDebug);
-		paramsInternal.add(bHelp);
-		paramsInternal.add(bKeys);
 
-		parameters.setName("Camera");
+		parameters.add(bMouseCam);
 		parameters.add(paramsCamera);
 		parameters.add(paramsSettings);
 		parameters.add(paramsInternal);
+		parameters.add(bDebug);
+		parameters.add(bKeys);
+		parameters.add(bHelp);
 	}
 
 	virtual void setupGui() {
@@ -441,13 +456,17 @@ public:
 			ss << "h: Help" << endl;
 			ss << "g: Gui" << endl;
 			ss << endl;
-			ss << "Ctrl: Mouse Input\n" << (this->getMouseInputEnabled() ? "ENABLED" : "DISABLED") << endl;
+			ss << "Ctrl: Mouse Input\n"
+			   << (this->getMouseInputEnabled() ? "ENABLED" : "DISABLED") << endl;
 			ss << endl;
-			ss << "Space: Projection Mode\n" << (this->getOrtho() ? "ORTHO" : "PERSPECTIVE") << endl;
+			ss << "Space: Projection Mode\n"
+			   << (this->getOrtho() ? "ORTHO" : "PERSPECTIVE") << endl;
 			ss << endl;
-			ss << "i: Camera Inertia\n" << (this->getInertiaEnabled() ? "TRUE" : "FALSE") << endl;
+			ss << "i: Camera Inertia\n"
+			   << (this->getInertiaEnabled() ? "TRUE" : "FALSE") << endl;
 			ss << endl;
-			ss << "y: Relative y axis\n" << (this->getRelativeYAxis() ? "TRUE" : "FALSE") << endl;
+			ss << "y: Relative y axis\n"
+			   << (this->getRelativeYAxis() ? "TRUE" : "FALSE") << endl;
 			ss << endl;
 			ss << "m: Translation key" << endl;
 			ss << endl;
@@ -484,25 +503,26 @@ public:
 			ss << "zoom will be centered\nat the mouse position.";
 		}
 		if (bDebug) {
-			ss << endl<< endl;
+			ss << endl
+			   << endl;
 			ss << "Control area:\n";
 			ss << ofToString(this->getControlArea());
 		}
 
 		sHelp = ss.str();
 
-		buildHelpGui();
+		refreshGui();
 	}
 
-	virtual void buildHelpGui() { //Optional: for using with ImGui..
-		//ofLogNotice("SurfingEasyCam") << "buildHelpGui()";
+	virtual void refreshGui() {
+		//ofLogNotice("SurfingEasyCam") << "refreshGui()";
 	}
 
-	virtual void drawHelpText() {
+	virtual void drawHelpText(ofxSurfing::SURFING_LAYOUT layout = ofxSurfing::SURFING_LAYOUT_BOTTOM_RIGHT) {
 		if (!bGui) return;
 		if (!bHelp) return;
 
-		ofxSurfing::ofDrawBitmapStringBox(sHelp, ofxSurfing::SURFING_LAYOUT_BOTTOM_RIGHT);
+		ofxSurfing::ofDrawBitmapStringBox(sHelp, layout);
 	}
 
 	//--
@@ -558,15 +578,18 @@ public:
 		ofLogNotice("SurfingEasyCam") << "doResetCamera()";
 
 		this->reset();
-
 		this->setFarClip(SURFING__CAMERA_FAR_CLIP);
 		this->setNearClip(SURFING__CAMERA_NEAR_CLIP);
 
 		//this->setVFlip(true);
 
-		float d = SURFING__SCENE_SIZE_UNIT;
-		this->setPosition({ 0, d, d });
-		this->lookAt(glm::vec3(0, 0, 0));
+		if (f_Reset != nullptr) {
+			f_Reset();
+		} else {
+			float d = SURFING__SCENE_SIZE_UNIT;
+			this->setPosition({ 0, d, d });
+			this->lookAt(glm::vec3(0, 0, 0));
+		}
 	}
 
 	void doResetSettings() {

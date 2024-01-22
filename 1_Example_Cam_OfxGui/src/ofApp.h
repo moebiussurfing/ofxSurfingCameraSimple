@@ -13,5 +13,5 @@ public:
 	ofxPanel gui;
 	ofParameter<bool> bDrawGrid { "Draw Grid", true };
 	
-	surfingEasyCamOfxGui cam;
+	surfingEasyCamOfxGui camera;
 };
