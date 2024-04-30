@@ -1,10 +1,10 @@
 --------------ofNode parameters--------------
 position
--262.319, 1040.17, 921.543
+-1217.69, 1245.88, 224.391
 scale
 1, 1, 1
 orientation
-0.908525, -0.406824, -0.093166, 0.019911
+0.743399, -0.532703, -0.390324, 0.10598
 --------------ofCamera parameters--------------
 fov
 60
@@ -28,7 +28,7 @@ target
 bEnableMouseMiddleButton
 1
 bMouseInputEnabled
-1
+0
 drag
 0.7
 doTranslationKey
@@ -40,4 +40,4 @@ doInertia
 upAxis
 0, 1, 0
 controlArea
-0, 0, 0, 1920, 1048
+0, 0, 0, 1920, 1057
