@@ -113,6 +113,7 @@ private:
 
 public:
 	void setName(const string & name_) { name = name_; }
+
 	ofParameter<bool> bGui { "Camera", true };
 	ofParameter<bool> bHelp { "Help", false };
 	ofParameter<bool> bExtra { "Extra", true };
