@@ -98,12 +98,11 @@ public:
 		helpTextWidget.setText(sHelp);
 	}
 
-	void drawHelpText() override {
-		//if (!bGui) return;
-		//if (!bHelp) return;
-
-		//helpTextWidget.draw();
-	}
+	//void drawHelpText() override {
+	//	//if (!bGui) return;
+	//	//if (!bHelp) return;
+	//	//helpTextWidget.draw();
+	//}
 
 	HelpTextWidget helpTextWidget;
 };
