@@ -1,15 +1,15 @@
 --------------ofNode parameters--------------
 position
-666038, -382612, 462332
+-377.894, 1136.29, -1051.94
 scale
-2.78912, 2.78912, 2.78912
+1.06422, 1.06422, 1.06422
 orientation
--0.859261, -0.173976, -0.460582, 0.138809
+0.381615, -0.893108, -0.237736, 0.0144936
 --------------ofCamera parameters--------------
 fov
 60
 near
-9.07595
+0.1
 far
 1e+06
 lensOffset
@@ -19,7 +19,7 @@ forceAspectRatio
 aspectRatio
 1.33333
 isOrtho
-1
+0
 vFlip
 0
 --------------ofEasyCam parameters--------------
@@ -40,4 +40,4 @@ doInertia
 upAxis
 0, 1, 0
 controlArea
-0, 0, 0, 1920, 1048
+0, 0, 1417, 1417

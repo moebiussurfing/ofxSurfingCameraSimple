@@ -612,7 +612,7 @@ public:
 		ofLogNotice("SurfingEasyCam") << "save()";
 
 		doSaveSettings();
-		doSaveCamera();
+		if (bAutosave) doSaveCamera();
 	}
 	void setEnableMouse(const bool b = true) {
 		ofLogNotice("SurfingEasyCam") << "setEnableMouse()" << b;
@@ -631,7 +631,8 @@ public:
 			if (!b2) {
 				doResetCamera();
 			} else {
-				if (bAutosave) doLoadCamera();
+				//if (bAutosave) doLoadCamera();
+				doLoadCamera();
 			}
 
 			//TODO
